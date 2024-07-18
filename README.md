@@ -1,4 +1,4 @@
-#Replication of Jensen and Miller's "Giffen Behavior and Subsistence Consumption"
+## Replication of Jensen and Miller's "Giffen Behavior and Subsistence Consumption"
 
 This repository contains the replication of the research findings from Jensen and Miller's seminal paper, "Giffen Behavior and Subsistence Consumption," published in the American Economic Review. The project was completed as part of a class assignment and includes the following components:
 
