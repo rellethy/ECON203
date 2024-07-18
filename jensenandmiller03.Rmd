@@ -1,0 +1,117 @@
+---
+title: "Giffen Behavior and Subsistence Consumption Recreation"
+author: "Ramsey EL Lethy"
+date: "2023-11-17"
+output:
+  pdf_document: default
+  html_document: default
+---
+Jensen and Miller's report:
+The main contribution form jensen and Miller's report is the identification if real life giffen goods
+and how they interact with the sociities in our world. Initially giffen goods seem to break the law
+of demand but as a result of this paper, things seem to less concrete than thought before.
+
+ in project 01 we replicated Panel A and Panel B of Table 1- "Means and Standard Deviations of Key variables. A signficant finding is that the consuption of wheat is much lower per person on average, but gansu has almost the exact different pattern. with wheat based foods are dominiant.
+
+In projet 02 we ran regression for our data sets, which allowed us to then run an F and T test for overall validity, and variable significance of our model. 
+
+```{r Giffen Behaivor}
+#install.packages("haven")
+library(haven)
+library(dplyr)
+library(magrittr)
+jm_replication <- read_dta("Giffen.dta")
+
+#str(data)
+#dim(data)
+#head(data)
+#colnames(data)
+
+
+# Make the dataset at household level
+jm_hh <- subset(jm_replication, person_id == min_p)
+
+# Add a female_head variable 
+# I added an additional condition "jm_hh$relationship == 0" following the original replication code
+jm_hh$female_head <- jm_hh$male == 0 & jm_hh$relationship == 0
+
+# Round 1 interviews, because we’re measuring things at the beginning of the trial
+jm_hh_r1 <- subset(jm_hh, round == 1)
+
+# Hunan dataset
+hunan_hh_r1 <- subset(jm_hh_r1, province == "Hunan")
+
+# Columns to summarize 
+summ_col_hunan <- c("family_size", "female_head", "income_per_capita", "expend_per_capita", 
+                    "hh_cals_percap", "hh_rice_percap", "hh_meat_percap", "hh_staple_calorie_share")
+
+# Generate the summary table for mean, standard deviation, and the number of observation
+summ_table_hunan <- hunan_hh_r1 %>% 
+  group_by(subsidy_group) %>% 
+  summarize(across(all_of(summ_col_hunan), list(mean = mean, sd = sd)), obs = n())
+
+# Transpose the table so that it looks similar to the table in the paper
+summ_table_hunan <- t(summ_table_hunan)
+
+# Set the first row as the column names
+colnames(summ_table_hunan) <- paste0("subsidy_", summ_table_hunan[1, ])
+summ_table_hunan <- summ_table_hunan[-1, ]
+
+# Show the table in the console
+summ_table_hunan
+
+# Export the result
+write.csv(summ_table_hunan, "Table1_Hunan.csv")
+
+gansu_hh_r1 <- subset(jm_hh_r1, province == "Gansu")
+
+summ_col_gansu <- c("family_size", "female_head", "income_per_capita", "expend_per_capita", 
+                    "hh_cals_percap", "hh_rice_percap", "hh_meat_percap", "hh_staple_calorie_share")
+
+summ_table_gansu <- gansu_hh_r1 %>% 
+  group_by(subsidy_group) %>%
+  summarize(across(all_of(summ_col_gansu), list(mean = mean, sd = sd)), obs = n())
+summ_table_gansu <- t(summ_table_gansu)
+
+colnames(summ_table_gansu) <- paste0("subsidy_", summ_table_gansu[1, ])
+summ_table_gansu <- summ_table_gansu[-1, ]
+summ_table_gansu
+
+write.csv(summ_table_gansu, "Table1_Gansu.csv")
+
+
+
+
+
+
+library(haven)
+jm = read_dta("Giffen.dta")
+#To prepare the data set
+#subset
+View(jm)
+jm_hh = subset(jm, person_id == min_p)
+#question is asking us to do this job for each province
+#make a separate dataset for hunan and gansu
+jm_hh_gansu = subset(jm_hh, province == "Gansu")
+jm_hh_hunan = subset(jm_hh, province == "Hunan")
+#we use lm to run regression
+#reg <- lm ( , data = )
+hunan_regression = lm(pct_ch_hh_rice ~ pct_ch_sub_rice_arc, data = jm_hh_hunan)
+gansu_regression = lm(pct_ch_hh_wheat ~ pct_ch_sub_wheat_arc, data = jm_hh_gansu)
+summary(hunan_regression)
+
+```
+
+
+
+Hunan notes b0 = -0.459 b1 = -0.095 std error (sb1) = 0.081 std error (sbo) = 1.36794 t = b1 / sb1 = -1.171
+dof > 1000 (1256) can consider this t test a normal distribution p = (0.242) > 0.05
+we cannot reject the null we do not have enough evidence to prove that the data is statistically significant
+gansu notes b0 = -28.6038 b1 = -0.4089
+std error (sb0) = 1.36 std error (sb1) = 0.08 t = b1 / sb1 = 3.054 p = (0.0023) < 0.05
+we reject the null, we have enough evidence to prove the data is statistically significant
+
+We estimate the elasticity of gansu positive because the coefficient of regression is not statistically significant. 
+
+
+
