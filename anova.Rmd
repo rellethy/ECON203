@@ -1,0 +1,54 @@
+---
+title: "Experimental Design and Anlysis of Variance"
+author: "Ramsey EL Lethy"
+date: "2023-10-21"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r Auditing Errors}
+
+audit_df <- read.csv("audjudg_r.csv")
+
+
+audit_anova <- aov(Errors ~ Method, data = audit_df)
+
+anova(audit_anova)
+
+```
+
+For this analysis of variance, we have a p value that is much less than an
+alpha value of 0.05, so we reject the null hypothesis. There data is 
+significant enough to conclude that the basis of judgement affects the 
+quality of judgement
+
+```{r Paint Drying Robots}
+
+paint_df <- read.csv("paint_r.csv")
+
+paint_anova <- aov(DryTime ~ Paint, data = paint_df)
+
+anova(paint_anova)
+
+```
+
+For this analysis of variance, we have a p value (0.09) that is greater than an
+alpha value of 0.05, so we fail to reject the null hypothesis. The data is not
+significant enough to suggest the mean drying time is different for each brand
+of robot 
+
+
+```{r Airfares on Travel Websites }
+air_df <- read.csv("airfares2_r.csv")
+
+air_anova <- aov(Cost ~ Flight + Service, data = air_df)
+
+anova(air_anova)
+
+```
+
+This analysis of variance gives us a p-value of 0.15 which is grater
+than 0.05, so therefore we would fail to reject the null hypothesis the
+data is not significant enough to suggest the mean prices are different 
