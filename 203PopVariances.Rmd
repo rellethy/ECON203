@@ -1,0 +1,251 @@
+---
+title: "Inferences About Population Variances"
+author: "Ramsey El Lethy"
+date: "2023-10-07"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Bus Times}
+#read our files
+bus_times_df <- read.csv("bustimes_r.csv")
+
+#use the function nrow to gather our sample size
+
+samp_size <- nrow(bus_times_df) #24 observations 
+
+#creating a vector (array) of times 
+times <- bus_times_df$Times
+
+#using the R funciton var to calculate the
+#sample variance of the variable 
+
+var_time <- var(times) #4 .9 (sample varaince)
+
+#Calculate our Chi Squared Stat 
+
+test_chi <- (samp_size - 1) * var_time / 4
+
+#pchisq gives us the p- value 
+
+p_value <- pchisq(test_chi,samp_size-1,lower.tail = FALSE)
+
+list(test_chi, p_value)
+```
+This test gives us a Chi Squared Value of 28.18 
+and a p-value of 0.209
+
+We are comparing the p-value to an alpha value of 0.05, since
+our p-value is greater, we fail to reject the null hypothesis, 
+We do not have significant data to suggest the variance is greater than 4 
+
+```{r Bus Types}
+#Two Tailed Test 
+
+#gather our data
+school_bus_df <- read.csv("schoolbus_r.csv")
+
+#Create subsets separating the vars
+milbank_df <- subset(school_bus_df, select = Milbank)
+gulfpark_df <- subset(school_bus_df, select = Gulf.Park)
+
+#omit the rows with missing values
+milbank_df <- na.omit(milbank_df)
+gulfpark_df <- na.omit(gulfpark_df)
+
+#gather the sample size
+samp_size_milbank <- nrow(milbank_df)
+samp_size_gulfpark <- nrow(gulfpark_df)
+
+#create a vector of times for milbank and gulf park 
+milbank_times <- milbank_df$Milbank
+gulfpark_times <- gulfpark_df$Gulf.Park
+
+#var to calculate sample variance
+var_time_milbank <- var(milbank_times)
+var_time_gulfpark <- var(gulfpark_times)
+
+#We use max and min functions to calculate F stat
+test_f <- max(var_time_milbank, var_time_gulfpark) /
+  min(var_time_milbank, var_time_gulfpark)
+
+#We use an If-else to find the numerator and denom
+#degrees of freedom 
+
+if (var_time_milbank > var_time_gulfpark) {
+  degreesnum = samp_size_milbank -1;
+  degreesdenom = samp_size_gulfpark - 1;
+} else {
+  degreesnum = samp_size_gulfpark -1; 
+  degreesdenom = samp_size_milbank - 1; 
+}
+
+#pf to perform hypothesis test  (two tailed, thats why we * 2)
+
+p_value_bus <- 2 * pf(test_f, degreesnum, degreesdenom, lower.tail = FALSE)
+
+list(test_f,p_value)
+```
+We get a test statistic of 2.401, with degrees freedom of 15 in the
+numerator and 25 in the denominator, we get a p-value of 0.081
+comparing this to an alpha value of 0.05, 0.081 > 0.05, so we 
+fail to reject the null hypothesis, there is not enough evidence
+to suggeset the variances are different. 
+```{r Vehicle Ownership}
+#vehicle ownership by Fortune Magazine Subscribers 
+# Ho: o = 0.94 Ha: o != 0.94 (Two tailed test)
+
+#vector of data
+vehicle <- c(2,1,2,0,3,2,2,1,2,1,0)
+
+#turn that into a data frame
+vehicle_df <- data.frame(vehicle)
+
+#gather the sample size
+
+sample_vehicle <- nrow(vehicle)
+
+#calculate sample variance
+
+var_vehicle <- var(vehicle)
+
+#Calculate our Chi Squared Statistic 
+
+test_chi_vehicle <- (sample_vehicle - 1) * var_vehicle / 0.94
+
+#pchisq p value for 1 tail, * 2 for 2 tail 
+
+p_value_vehicle <- 2 * pchisq(test_chi,samp_size-1,lower.tail = FALSE)
+
+list(var_vehicle, test_chi_vehicle, p_value_vehicle)
+```
+A. Sample Variance = 0.8727
+
+B. Our Chi squared Statistic was calculated to be 9.28 and 
+our p-value was calculated to be 1.98. Comparing it to an alpha 
+value of 0.05. 1.98 > 0.05, so we fail to reject the null hypothesis
+there is not enough evidence to conclude that the Population variance is
+not equal to 0.94. 
+
+```{r Bag Filling Machines }
+#Bag-Filling Machines at Jelly belly
+#Test of equality between to populatins 
+#H0: o1 = o2
+#HA: o1 != o2
+#ASSUME THE POPULATION VARIANCES ARE EQUAL IF 
+#H0 IS REJECTED WE DRAW THE CONCLUSION THAT THE 
+#POPULATION VARIANCES ARE NOT EQUAL 
+
+#gather our data 
+bags_df <- read.csv("bags_r.csv")
+
+#create subsets separating our vars
+machine1_df <- subset(bags_df, select = Machine1)
+machine2_df <- subset(bags_df, select = Machine2)
+
+#omit rows with missing values 
+machine1_df <- na.omit(machine1_df)
+machine2_df <- na.omit(machine2_df)
+
+#gather sample size
+machine1_size <- nrow(machine1_df)
+machine2_size <- nrow(machine2_df)
+
+#create a vector of values for both machines
+machine1_vals <- machine1_df$Machine1
+machine2_vals <- machine2_df$Machine2
+
+#calculate sample variance respectively
+var_machine1 <- var(machine1_vals)
+var_machine2 <- var(machine2_vals)
+
+#Calculating our f statistic 
+test_f_jellybelly <- max(var_machine1, var_machine2) / min(var_machine1, var_machine2)
+
+#An If else statement to choose our numerator and denom dof
+if (var_machine1 > var_machine2) {
+  dofnum = machine1_size - 1;
+  dofdenom = machine2_size -1; 
+} else {
+  dofnum = machine2_size -1; 
+  dofdenom = machine1_size - 1; 
+}
+
+
+#pf to perform hyp test (two tailed)
+p_value_jellybelly <- 2 * pf(test_f_jellybelly, dofnum, dofdenom, lower.tail = FALSE)
+
+list(test_f_jellybelly,p_value_jellybelly)
+```
+This test gives us a F statistic of 8.28 and a p-value of 
+7.22 * 10^-6. Comparing this to an alpha value of 0.05, our
+p-value is less than our alpha value. So we can reject the null hypothesis
+there is enough evidence to conclude that the variation
+between the two machines is significant. 
+```{r Smartphone Battery Life }
+#Smartphone Battery Life 
+#Ratio of variances 
+#H0 : 01 <= 02
+#HA : 01 > 02 01 is talk time 02 is internet applications 
+
+batterylife_df <- read.csv("batterylife_r.csv")
+
+#Create subsets separating the variables 
+talk_df <- subset(batterylife_df, select = Talking)
+net_df <- subset(batterylife_df, select = Internet)
+
+#Agian, we omit the rows with missing values
+talk_df <- na.omit(talk_df)
+net_df <- na.omit(net_df)
+
+#gather our sample sizes
+talk_size <- nrow(talk_df)
+net_size <- nrow(net_df)
+
+#create a vector of battery life between charges
+talk_battery <- talk_df$Talking
+net_battery <- net_df$Internet
+
+#var to calculate sample variance 
+var_talk <- var(talk_battery)
+var_net <- var(net_battery)
+
+#Max and Min functions to calculate our F statistic
+test_f_battery <- max(var_talk, var_net) / min(var_talk, var_net)
+
+#If else statement to choose our num and denom dof 
+if (var_talk > var_net) {
+  dofnumbattery = talk_size - 1; 
+  dofdenombattery = net_size - 1; 
+} else {
+  dofnumbattery = net_size - 1; 
+  dofnumbatter = talk_size - 1; 
+}
+
+#pf to perform hypothesis test (one tailed upper)
+p_value_battery <- pf(test_f_battery, dofnumbattery, dofdenombattery, 
+                      lower.tail = FALSE)
+#calculate the standard deviation for each function
+talk_sd <- sd(talk_battery)
+net_sd <- sd(net_battery)
+
+list(test_f_battery, p_value_battery, talk_sd, net_sd)
+```
+A. 
+HO: O1 <= O2
+HA: O1 > O2
+
+B. The sample standard Deviations were 
+Talk time : 7.363 
+Internet Applicaiton : 4.76
+
+This test gives us a F statistic of 2.38 and a p-value of 
+0.09. Comparing this to an alpha value of 0.05, our
+p-value is greater than our alpha value. So we fail reject the null hypothesis
+there is not enough evidence to conclude that the variation
+in talk time is greater than the variation in internet applications

@@ -1,0 +1,146 @@
+---
+title: "Various Linear Regression Models"
+author: "Ramsey EL Lethy"
+date: "2023-11-04"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r Passing and Winning in the NFL }
+#Passign and Winning in the NFL 
+library(ggplot2)
+passing_df <- read.csv("nflpassing_r.csv")
+
+str(passing_df
+    )
+
+# Create the plot
+my_plot <- ggplot(passing_df, aes(x = Yds, y = Win)) +
+  geom_point() +
+  labs(x = "Yds", y = "Win", title = "Scatterplot of Yds vs. Win")
+
+# Display the plot in a separate window
+plot(my_plot)
+
+passing_SLR <- lm(Win ~ Yds, data = passing_df)
+new_data <- data.frame(Yds = 6.2)
+
+summary(passing_SLR)
+
+prediction <- predict(passing_SLR, newdata = new_data)
+
+```
+since our ploints are upward sloping
+this scatter diagram shows a positive relationship
+between our independant variable, Yards and our 
+dependant variable Wins
+
+the slope of our regression line is positive 
+representing a positive relationship between x and y 
+our regression equation is -70.391 + 17.175x 
+
+our prediction expects the cheifs to have about 36 wins 
+```{r Age and the Price of Wine}
+wine_df <- read.csv("wineprices_r.csv")
+
+wine_plot <- ggplot(wine_df, aes(x = Age, y = Price)) +
+  geom_point() +
+  labs(x = "Age", y = "Price", title = "Scatterplot of Age vs. Price")
+
+# Display the plot in a separate window
+plot(wine_plot)
+
+wine_LR <- lm(Price ~ Age, data = wine_df)
+
+summary(wine_LR)
+
+
+```
+this scatter diagram 
+shows a positive relationship
+between x (age) and y (price)
+
+
+This regressin shows a slope of 6.9520, 
+this slope is positive
+suggesting a upward sloping or positive relationship between 
+the age of the wine and its price
+```{r Price and Weight of Bicycles}
+
+bike_df <- read.csv("racingbicycles_r.csv")
+
+bike_r <- lm(Price ~ Weight, data = bike_df)
+
+summary(bike_r)
+
+newdata_bike = data.frame(Weight = 15)
+predict(bike_r,newdata = newdata_bike)
+```
+R Squared came to be 0.86
+Since R > 0.5, we can say that 
+the estimated regression equation 
+provides a good fit of the data 
+86 percent of the data can be attributed to our regression 
+
+at a weight of 15 pounds 
+our regression predicts the price to be $6980.006
+
+```{r College GPA and Salary }
+college_df <- read.csv("gpasalary_r.csv")
+
+college_plot <- ggplot(college_df, aes(x = GPA, y = Salary)) +
+  geom_point() +
+  labs(x = "GPA", y = "Salary", title = "Scatterplot of GPA vs. Salary")
+
+# Display the plot in a separate window
+plot(college_plot)
+
+college_lr <- lm(Salary ~ GPA, data = college_df)
+
+summary(college_lr)
+```
+this scatter diagram 
+shows a positive relationship
+between x (GPA) and y (Salary)
+
+Regression Equation Salary = -110210 + 72990 * GPA
+
+At a significance level of 0.05, our f statistic 
+is 104.3, giving a p-value to be 0.000
+since p < 0.05 this shows a significant relationship between
+GPA and salary 10 years after college
+we reject the null hypothesis and say that 
+GPA has some effect on salary 10 years after college 
+
+
+
+```{r Entertainment Spending}
+#Entertainment Spend 
+
+spending_df <- read.csv("businesstravel_r.csv")
+
+spending_lr <- lm(Entertainment ~ Room.Rate, data = spending_df)
+
+
+spending_function <- function(x) {
+  y <- 17.49 + 1.0334 * x 
+  return(y)
+}
+
+
+prediction <- spending_function(89)
+
+print(prediction)
+
+newdata_spending = data.frame(Room.Rate = 89)
+predict(spending_lr,newdata_spending,interval="confidence", level = 0.95)
+
+newdata_prediction = data.frame(Room.Rate = 128)
+predict(spending_lr, newdata_prediction, interva = "prediction", level = 0.95 )
+
+```
+we predict the value of y to be 109.4626
+
+confidence interval stats lower 94.84742  upper 124.0833
+
+prediciton interval stats lower 110.6927 upper 188.8444

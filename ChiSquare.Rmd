@@ -1,0 +1,197 @@
+---
+title: "Chi-Square Tests with R"
+author: "Ramsey EL Lethy"
+date: "2023-10-13"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+```{r #Test of Equality Population Proportions of Test Independence}
+
+#Test of Equality Population Proportions of Test Independence 
+
+#Read our data 
+auto_loyalty_df <- read.csv("autoloyalty_r.csv")
+
+#Generate subsets for each 
+impala_df <- subset(auto_loyalty_df, Automobile == "Chevrolet Impala")
+fusion_df <- subset(auto_loyalty_df, Automobile == "Ford Fusion")
+accord_df <- subset(auto_loyalty_df, Automobile == "Honda Accord")
+
+#omit the invalid spaces
+impala_df <- na.omit(impala_df)
+fusion_df <- na.omit(fusion_df)
+accord_df <- na.omit(accord_df)
+
+#subset of the 'Yes' Responses
+yes_impala <- subset(impala_df, Likely.Repurchase == "Yes")
+yes_fusion <- subset(fusion_df, Likely.Repurchase == "Yes")
+yes_accord <- subset(accord_df, Likely.Repurchase == "Yes")
+
+#Nrow for the number of yes responsees
+num_yes_impala <- nrow(yes_impala)
+num_yes_fusion <- 
+  nrow(yes_fusion)
+num_yes_accord <- nrow(yes_accord)
+
+#subset of the 'No' responses
+no_impala <- subset(
+  impala_df, Likely.Repurchase == "No")
+no_fusion <- subset(fusion_df, Likely.Repurchase == "No")
+no_accord <- subset(accord_df, Likely.Repurchase == "No")
+
+#nrow for the number of 'no' repsonses
+num_no_impala <- nrow(no_impala)
+num_no_fusion <- nrow(no_fusion)
+num_no_accord <- nrow(no_accord)
+
+#sample size for each car
+samp_size_impala <- num_yes_impala + num_no_impala
+samp_size_fusion <- num_yes_fusion + num_no_fusion
+samp_size_accord <- num_yes_accord + num_no_accord
+
+#finally we can do our proportion test 
+test <- prop.test(c(num_yes_impala, num_yes_fusion,
+                    num_yes_accord), c(samp_size_impala,
+                                       samp_size_fusion, samp_size_accord),
+                  correct = FALSE)
+
+list(test)
+
+
+
+```
+The Chi Squared value is 7.891 and the P-vaule 
+is 0.0193, Since the p value is less than our 
+alpha, we will reject the null hypothesis
+there is enough evidence to suggest that 
+the proportions are not equal 
+
+
+```{r Chi Square Goodness-of-Fit Test}
+#Chi Square goodness of Fit test
+
+#read our file 
+smr_df <- read.csv("scottmarketingsummary_r.csv")
+
+#create a subset of each company 
+company_a <- subset(smr_df, Company == "A")
+company_b <- subset(smr_df, Company == "B")
+company_c <- subset(smr_df, Company == "C")
+
+#create a vector of obeserved responses 
+
+observed = c(company_a$Count, company_b$Count, company_c$Count)
+
+#create a vector of expected proportions
+expected_props = c(0.3,0.5,0.2)
+
+#lets run our test!
+test_chi <- chisq.test(x = observed, p = expected_props)
+
+list(test_chi)
+
+```
+We get a chi square value of 7.34 and a p value of 0.0255 
+since 0.05 our alpha vaue, is greater than 0.0255 we reject 
+the null hypothesis, there is enough evidence to suggest that 
+the proportions are not equal to 0.3, 0.5 and 0.2 respectively. 
+
+
+```{r Use of Social Media}
+#Test of Equality of  Population Proportions for the Use of Social Media 
+
+#read out data 
+socialmedia_df <- read.csv("socialmedia_r.csv")
+
+View(socialmedia_df)
+#create subsets for each country
+uk_df <- subset(socialmedia_df, Country == "United Kingdom")
+china_df <- subset(socialmedia_df, Country == "China")
+russia_df <- subset(socialmedia_df, Country == "Russia")
+usa_df <- subset(socialmedia_df, Country == "United States")
+
+
+#subset of the yes responses 
+yes_uk <- subset(uk_df, Use_Social_Media == "Yes")
+yes_china <- subset(china_df, Use_Social_Media == "Yes")
+yes_russia <- subset(russia_df, Use_Social_Media == "Yes")
+yes_usa <- subset(usa_df, Use_Social_Media == "Yes")
+
+#nrow for the number of yes responses
+num_yes_uk <- nrow(yes_uk)
+num_yes_china <- nrow(yes_china)
+num_yes_russia <- nrow(yes_russia)
+num_yes_usa <- nrow(yes_usa)
+
+#subset of the no responses
+no_uk <- subset(uk_df, Use_Social_Media == "No")
+no_china <- subset(china_df, Use_Social_Media == "No")
+no_russia <- subset(russia_df, Use_Social_Media == "No")
+no_usa <- subset(usa_df, Use_Social_Media == "No")
+
+#nrow for the number of no responses
+num_no_uk <- nrow(no_uk)
+num_no_china <- nrow(no_china)
+num_no_russia <- nrow(no_russia)
+num_no_usa <- nrow(no_usa)
+
+#sample size for each country
+samp_size_uk <- num_no_uk + num_yes_uk
+samp_size_russia <- num_no_russia + num_yes_russia
+samp_size_china <- num_no_china + num_yes_china
+samp_size_usa <- num_no_usa + num_yes_usa
+
+#porportion test 
+
+test_countries <- prop.test(c(num_yes_uk, num_yes_china,
+                    num_yes_russia, num_yes_usa), c(samp_size_uk,
+                                       samp_size_china, samp_size_russia,
+                                       samp_size_usa),
+                  correct = FALSE)
+
+list(test_countries)
+
+
+```
+A. This test gives us a Chi Squared Statistic of 79.35 and a 
+p-value of 0.000, since our p- value is less that our alpha values of
+0.05, we reject the null hypothesis, and conclude that there isnt enough
+evidence to suggest the proportions are different.
+
+B. The sample Proportions for each country are as follows 
+prop 1 prop 2 prop 3 prop 4 
+0.60   0.43   0.49   0.64
+
+
+
+```{r M&M Candy Colors}
+#M&M Candy colors 
+
+candy_df <- read.csv("mandm.csv")
+
+blue_df <- subset(candy_df, Color == "Blue")
+brown_df <- subset(candy_df, Color == "Brown")
+green_df <- subset(candy_df, Color == "Green")
+orange_df <- subset(candy_df, Color == "Orange")
+red_df <- subset(candy_df, Color == "Red")
+yellow_df <- subset(candy_df, Color == "Yellow")
+
+observed_candy = c(105,72,89,84,70,80)
+
+expected_props_candy = c(0.24,0.13,0.20,0.16,0.13,0.14)
+
+test_chi_candy <- chisq.test(x = observed_candy, p = expected_props_candy)
+
+list(test_chi_candy)
+
+```
+We get a Chi Squared Value of 5.852 and a 
+P-Value of 0.3209 since our P-Value is greater
+than our alpha value of 0.05, we fail to reject the null
+hypothesis, there is not enough evidence to suggest
+the proportions are not 0.24, 0.13, 0.20, 0.16,0.13,0.14
+
