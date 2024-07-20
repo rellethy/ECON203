@@ -5,4 +5,5 @@ This repository contains classwork in data analysis and methods produced in R ov
 
 Data Tables: Recreated data tables from Jensen and Miller, Cengage Statisics for Buisness and Economics Datasets
 R Code: Scripts written in R to replicate the analysis and findings of the study.
+
 Documentation: Documentation explaining each step of the replication process, including data sources, code explanations, and interpretation of results.
